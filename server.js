@@ -38,7 +38,7 @@ app.use(
 );
 
 // Routes
-app.use("/api/origin/auth", authRoutes); // Ensure this route is correctly set up
+app.use("/api/origin/auth", authRoutes);// Ensure this route is correctly set up
 app.use("/api/origin/forms", formRoutes);
 app.use("/api/railfreight/forms", railFreightRoutes);
 
@@ -46,5 +46,18 @@ app.use("/api/railfreight/forms", railFreightRoutes);
 app.use(errorHandler);
 
 // Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const PORT = process.env.PORT || 3000;
+const server = app.listen(PORT)
+  .on('listening', () => {
+    console.log(`Server running on port ${PORT}`);
+  })
+  .on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`Port ${PORT} is already in use. Please:
+      1. Stop any other servers running on this port, OR
+      2. Choose a different port by changing the PORT environment variable`);
+      process.exit(1);
+    } else {
+      console.error('Server error:', err);
+    }
+  });
