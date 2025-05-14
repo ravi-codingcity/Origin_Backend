@@ -36,7 +36,6 @@ const createForm = async (req, res) => {
     thc,
     muc,
     toll,
-    ihc,
     currency,
   } = req.body;
   const userId = req.user.id;
@@ -53,7 +52,6 @@ const createForm = async (req, res) => {
       thc,
       muc,
       toll,
-      ihc,
       currency,
       createdBy: userId,
     });

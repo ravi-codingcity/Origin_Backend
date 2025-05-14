@@ -11,7 +11,7 @@ const formSchema = new mongoose.Schema(
     thc: { type: String },
     muc: { type: String },
     toll: { type: String },
-    ihc: { type: String },
+    
     currency: { type: String },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
