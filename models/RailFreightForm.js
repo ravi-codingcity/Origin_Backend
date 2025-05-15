@@ -36,7 +36,11 @@ const railFreightFormSchema = new mongoose.Schema(
       type: String,
       default: 0,
     },
-    weight20ft20Plus: {
+    weight20ft20_26: {
+      type: String,
+      default: 0,
+    },
+    weight20ft26Plus: {
       type: String,
       default: 0,
     },
