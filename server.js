@@ -42,10 +42,6 @@ app.use("/api/origin/auth", authRoutes);// Ensure this route is correctly set up
 app.use("/api/origin/forms", formRoutes);
 app.use("/api/railfreight/forms", railFreightRoutes);
 
-// Health check route for Docker and Back4App
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
-});
 
 // Error Handling Middleware
 app.use(errorHandler);
