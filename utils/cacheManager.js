@@ -60,7 +60,7 @@ const setCache = (key, data, ttl = undefined, retries = 3) => {
       
       // If we have retries left, try again after a short delay
       if (retries > 0) {
-        console.log(`Retrying cache operation for '${key}', ${retries} attempts remaining...`);
+        console.log(`Retrying cache operation for '${key}', ${retries} attempts remaining..`);
         setTimeout(() => setCache(key, data, ttl, retries - 1), 1000);
       }
     } else {

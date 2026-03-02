@@ -96,7 +96,7 @@ const deleteForm = async (req, res) => {
     if (form.createdBy.toString() !== req.user.id) {
       return res.status(403).json({ message: "Forbidden" });
     }
-    await form.remove();
+    await Form.deleteOne({ _id: form._id });
 
     // Clear cache when form is deleted
     clearFormCache(req.user.id);

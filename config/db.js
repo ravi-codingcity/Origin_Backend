@@ -1,4 +1,8 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+// Use Google Public DNS to resolve MongoDB Atlas SRV records reliably
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 // Cache the database connection between function invocations
 let cachedConnection = null;
