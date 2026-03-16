@@ -4,6 +4,10 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
 const formRoutes = require("./routes/OriginformRoutes");
 const railFreightRoutes = require("./routes/RailFreightRoutes");
+const itAssetRoutes = require("./routes/itAssets/itAssetRoutes");
+const itAuthRoutes = require("./routes/itAssets/itAuthRoutes");
+const itHealthRoutes = require("./routes/itAssets/itHealthRoutes");
+const visitorRoutes = require("./routes/visitorRoutes");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
@@ -41,6 +45,14 @@ app.use(
 app.use("/api/origin/auth", authRoutes);// Ensure this route is correctly set up
 app.use("/api/origin/forms", formRoutes);
 app.use("/api/railfreight/forms", railFreightRoutes);
+
+// IT Assets Routes
+app.use("/api/v1/itAssets/health", itHealthRoutes);
+app.use("/api/v1/itAssets/auth", itAuthRoutes);
+app.use("/api/v1/itAssets/assets", itAssetRoutes);
+
+// Visitor Counter
+app.use("/api/visitor", visitorRoutes);
 
 
 // Error Handling Middleware
