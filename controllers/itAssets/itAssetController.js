@@ -55,6 +55,7 @@ exports.createAsset = async (req, res, next) => {
   try {
     if (!handleValidation(req, res)) return;
     const data = fillDefaults({ ...req.body });
+    if (data.dateOfPurchase === '' || data.dateOfPurchase === undefined) data.dateOfPurchase = null;
     if (!req.body.createdBy) {
       return res.status(400).json({ success: false, message: 'createdBy (userId) is required' });
     }
@@ -148,6 +149,7 @@ exports.updateAsset = async (req, res, next) => {
   try {
     if (!handleValidation(req, res)) return;
     const { serialNumber, createdBy, isDeleted, ...updateData } = req.body;
+    if (updateData.dateOfPurchase === '' || updateData.dateOfPurchase === undefined) updateData.dateOfPurchase = null;
     const asset = await Asset.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       updateData,

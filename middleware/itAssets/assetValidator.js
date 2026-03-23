@@ -34,7 +34,7 @@ const createAssetRules = [
     .isString().withMessage('operatingSystem must be a string')
     .trim(),
   body('dateOfPurchase')
-    .optional()
+    .optional({ values: 'falsy' })
     .isISO8601().withMessage('dateOfPurchase must be a valid date'),
   body('remark')
     .optional()
