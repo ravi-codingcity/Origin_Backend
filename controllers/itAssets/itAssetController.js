@@ -36,7 +36,6 @@ function fillDefaults(obj) {
   obj.operatingSystem = obj.operatingSystem || 'NA';
   obj.status = obj.status || 'Active';
   if (!obj.device || !Asset.DEVICE_TYPES.includes(obj.device)) obj.device = 'Other';
-  if (!obj.dateOfPurchase) obj.dateOfPurchase = new Date();
   return obj;
 }
 

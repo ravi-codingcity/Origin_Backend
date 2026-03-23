@@ -73,7 +73,7 @@ const assetSchema = new mongoose.Schema(
     },
     dateOfPurchase: {
       type: Date,
-      default: Date.now,
+      default: null,
     },
     remark: {
       type: String,
