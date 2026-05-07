@@ -1,6 +1,20 @@
 const Form = require("../models/RailFreightForm");
 const cacheManager = require("../utils/cacheManager");
 
+// If frontend sends { value: X, currency: '₹' } objects, extract the raw value
+const extractValue = (v) => {
+  if (v !== null && typeof v === 'object' && 'value' in v) return String(v.value);
+  if (v === undefined || v === null) return v;
+  return String(v);
+};
+
+const sanitizeWeightFields = (body) => {
+  const fields = ['weight20ft0_10','weight20ft10_20','weight20ft20_26','weight20ft26Plus','weight40ft10_20','weight40ft20Plus'];
+  const sanitized = { ...body };
+  fields.forEach((f) => { if (f in sanitized) sanitized[f] = extractValue(sanitized[f]); });
+  return sanitized;
+};
+
 // Cache keys - Make them specific to rail freight
 const ALL_FORMS_CACHE_KEY = "rail_freight_all_forms";
 const USER_FORMS_PREFIX = "rail_freight_user_forms_";
@@ -40,6 +54,7 @@ const createForm = async (req, res) => {
     currency,
   } = req.body;
   const userId = req.user.id;
+  const clean = sanitizeWeightFields(req.body);
 
   try {
     const form = new Form({
@@ -48,12 +63,12 @@ const createForm = async (req, res) => {
       pol,
       shipping_lines,
       container_type,
-      weight20ft0_10,
-      weight20ft10_20,
-      weight20ft20_26,
-    weight20ft26Plus,
-     weight40ft10_20,
-      weight40ft20Plus,
+      weight20ft0_10: clean.weight20ft0_10,
+      weight20ft10_20: clean.weight20ft10_20,
+      weight20ft20_26: clean.weight20ft20_26,
+      weight20ft26Plus: clean.weight20ft26Plus,
+      weight40ft10_20: clean.weight40ft10_20,
+      weight40ft20Plus: clean.weight40ft20Plus,
       currency,
       createdBy: userId,
     });
@@ -77,7 +92,7 @@ const editForm = async (req, res) => {
     if (form.createdBy.toString() !== req.user.id) {
       return res.status(403).json({ message: "Forbidden" });
     }
-    Object.assign(form, req.body);
+    Object.assign(form, sanitizeWeightFields(req.body));
     await form.save();
 
     // Clear cache when form is edited

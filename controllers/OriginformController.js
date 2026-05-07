@@ -1,6 +1,20 @@
 const Form = require("../models/OriginForm");
 const cacheManager = require("../utils/cacheManager");
 
+// If frontend sends { value: 0, currency: '₹' } objects, extract the raw value
+const extractValue = (v) => {
+  if (v !== null && typeof v === 'object' && 'value' in v) return String(v.value);
+  if (v === undefined || v === null) return v;
+  return String(v);
+};
+
+const sanitizeChargeFields = (body) => {
+  const fields = ['bl_fees', 'thc', 'muc', 'toll'];
+  const sanitized = { ...body };
+  fields.forEach((f) => { if (f in sanitized) sanitized[f] = extractValue(sanitized[f]); });
+  return sanitized;
+};
+
 // Cache keys
 const ALL_FORMS_CACHE_KEY = "all_forms";
 const USER_FORMS_PREFIX = "user_forms_";
@@ -41,6 +55,7 @@ const createForm = async (req, res) => {
   const userId = req.user.id;
 
   try {
+    const clean = sanitizeChargeFields(req.body);
     const form = new Form({
       name,
       por,
@@ -48,10 +63,10 @@ const createForm = async (req, res) => {
       pod,
       shipping_lines,
       container_type,
-      bl_fees,
-      thc,
-      muc,
-      toll,
+      bl_fees: clean.bl_fees,
+      thc: clean.thc,
+      muc: clean.muc,
+      toll: clean.toll,
       currency,
       createdBy: userId,
     });
@@ -75,7 +90,7 @@ const editForm = async (req, res) => {
     if (form.createdBy.toString() !== req.user.id) {
       return res.status(403).json({ message: "Forbidden" });
     }
-    Object.assign(form, req.body);
+    Object.assign(form, sanitizeChargeFields(req.body));
     await form.save();
 
     // Clear cache when form is edited
