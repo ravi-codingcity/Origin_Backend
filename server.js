@@ -8,6 +8,7 @@ const itAssetRoutes = require("./routes/itAssets/itAssetRoutes");
 const itAuthRoutes = require("./routes/itAssets/itAuthRoutes");
 const itHealthRoutes = require("./routes/itAssets/itHealthRoutes");
 const visitorRoutes = require("./routes/visitorRoutes");
+const jobPortalRoutes = require("./routes/jobPortal/jobPortalRoutes");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
@@ -30,7 +31,13 @@ connectDB()
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+// CORS: restrict to configured origin(s) when CORS_ORIGIN is set
+// (comma-separated list); otherwise fall back to open CORS for the
+// other existing modules.
+const corsOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
+  : null;
+app.use(cors(corsOrigins ? { origin: corsOrigins, credentials: true } : {}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(
@@ -53,6 +60,9 @@ app.use("/api/v1/itAssets/assets", itAssetRoutes);
 
 // Visitor Counter
 app.use("/api/visitor", visitorRoutes);
+
+// Job Portal (HR + public Careers)
+app.use("/api/job-portal", jobPortalRoutes);
 
 
 // Error Handling Middleware
