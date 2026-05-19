@@ -29,15 +29,20 @@ dotenv.config();
   try {
     await connectDB();
 
+    const passwordHash = await bcrypt.hash(password, 12);
     const existing = await HRUser.findOne({ username });
+
     if (existing) {
-      console.log(`HR user "${username}" already exists — nothing to do.`);
+      // Keep the DB in sync with the env so SEED_HR_PASS changes take
+      // effect on re-run (otherwise a stale hash blocks login).
+      existing.passwordHash = passwordHash;
+      existing.role = "hr";
+      await existing.save();
+      console.log(`HR user "${username}" already existed — password reset from SEED_HR_PASS.`);
       process.exit(0);
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
     await HRUser.create({ username, passwordHash, role: "hr" });
-
     console.log(`HR user "${username}" created successfully.`);
     process.exit(0);
   } catch (err) {

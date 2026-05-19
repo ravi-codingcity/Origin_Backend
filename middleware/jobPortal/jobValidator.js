@@ -18,6 +18,20 @@ const loginRules = [
     .isLength({ max: 200 }).withMessage("password too long"),
 ];
 
+const signupRules = [
+  body("username")
+    .isString().withMessage("username is required")
+    .trim()
+    .notEmpty().withMessage("username is required")
+    .isLength({ min: 3, max: 120 }).withMessage("username must be 3-120 characters"),
+  body("password")
+    .isString().withMessage("password is required")
+    .isLength({ min: 8, max: 200 }).withMessage("password must be at least 8 characters"),
+  body("signupSecret")
+    .isString().withMessage("signupSecret is required")
+    .notEmpty().withMessage("signupSecret is required"),
+];
+
 const createJobRules = [
   body("title")
     .isString().withMessage("title is required")
@@ -76,4 +90,10 @@ const updateJobRules = [
 
 const jobIdRules = [param("id").isMongoId().withMessage("Invalid job ID")];
 
-module.exports = { loginRules, createJobRules, updateJobRules, jobIdRules };
+module.exports = {
+  loginRules,
+  signupRules,
+  createJobRules,
+  updateJobRules,
+  jobIdRules,
+};

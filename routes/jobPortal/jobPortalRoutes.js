@@ -8,8 +8,9 @@ const {
   createJobRules,
   updateJobRules,
   jobIdRules,
+  signupRules,
 } = require("../../middleware/jobPortal/jobValidator");
-const { login } = require("../../controllers/jobPortal/jobAuthController");
+const { login, signup } = require("../../controllers/jobPortal/jobAuthController");
 const {
   getJobs,
   getJobById,
@@ -27,8 +28,18 @@ const loginLimiter = rateLimit({
   message: { message: "Too many login attempts, please try again later" },
 });
 
+// Abuse protection on the hidden signup endpoint: 3 requests / 15 min / IP
+const signupLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 3,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many signup attempts, please try again later" },
+});
+
 // --- Auth ---
 router.post("/login", loginLimiter, loginRules, login);
+router.post("/signup", signupLimiter, signupRules, signup);
 
 // --- Public reads ---
 router.get("/jobs", getJobs);
