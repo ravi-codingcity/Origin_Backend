@@ -9,6 +9,7 @@ const itAuthRoutes = require("./routes/itAssets/itAuthRoutes");
 const itHealthRoutes = require("./routes/itAssets/itHealthRoutes");
 const visitorRoutes = require("./routes/visitorRoutes");
 const jobPortalRoutes = require("./routes/jobPortal/jobPortalRoutes");
+const isfFilingRoutes = require("./routes/ISF_filing/isfFilingRoutes");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
@@ -63,6 +64,9 @@ app.use("/api/visitor", visitorRoutes);
 
 // Job Portal (HR + public Careers)
 app.use("/api/job-portal", jobPortalRoutes);
+
+// ISF Filing
+app.use("/api/isf-filing", isfFilingRoutes);
 
 
 // Error Handling Middleware
