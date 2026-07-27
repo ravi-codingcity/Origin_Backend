@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(PORT=3555 node server.js)",
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" http://localhost:3555/health)",
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" http://localhost:3555/health/ready)",
+      "Read(//tmp/**)",
+      "Bash(kill %1)",
+      "Bash(PORT=3556 node server.js)",
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" http://localhost:3556/health/ready)"
+    ]
+  }
+}

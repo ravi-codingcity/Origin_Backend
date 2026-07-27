@@ -10,6 +10,7 @@ const itHealthRoutes = require("./routes/itAssets/itHealthRoutes");
 const visitorRoutes = require("./routes/visitorRoutes");
 const jobPortalRoutes = require("./routes/jobPortal/jobPortalRoutes");
 const isfFilingRoutes = require("./routes/ISF_filing/isfFilingRoutes");
+const healthRoutes = require("./routes/healthRoutes");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
@@ -48,6 +49,9 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+// Health check
+app.use("/health", healthRoutes);
 
 // Routes
 app.use("/api/origin/auth", authRoutes);// Ensure this route is correctly set up
