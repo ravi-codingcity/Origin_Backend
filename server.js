@@ -12,7 +12,9 @@ const visitorRoutes = require("./routes/visitorRoutes");
 const jobPortalRoutes = require("./routes/jobPortal/jobPortalRoutes");
 const isfFilingRoutes = require("./routes/ISF_filing/isfFilingRoutes");
 const userManagementRoutes = require("./routes/userManagementRoutes");
+const newsRoutes = require("./routes/newsRoutes");
 const healthRoutes = require("./routes/healthRoutes");
+const path = require("path");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
@@ -52,6 +54,22 @@ app.use(
   })
 );
 
+/**
+ * Serve uploaded news images.
+ *
+ * helmet()'s default Cross-Origin-Resource-Policy is "same-origin", which would
+ * block the website (different origin) from rendering these files, so the
+ * header is relaxed for this static path only.
+ */
+app.use(
+  "/uploads",
+  (req, res, next) => {
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+  },
+  express.static(path.join(__dirname, "uploads"), { maxAge: "7d" })
+);
+
 // Health check
 app.use("/health", healthRoutes);
 
@@ -79,6 +97,9 @@ app.use("/api/isf-filing", isfFilingRoutes);
 // authentication happens at /api/v1/itAssets/auth/login.
 // There is no registration endpoint anywhere in this API.
 app.use("/api/admin", userManagementRoutes);
+
+// News / blog — public reads, IT Admin writes
+app.use("/api/news", newsRoutes);
 
 
 // Error Handling Middleware
