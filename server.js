@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
 const formRoutes = require("./routes/OriginformRoutes");
+const shippingLineRoutes = require("./routes/shippingLineRoutes");
 const railFreightRoutes = require("./routes/RailFreightRoutes");
 const itAssetRoutes = require("./routes/itAssets/itAssetRoutes");
 const itAuthRoutes = require("./routes/itAssets/itAuthRoutes");
@@ -10,6 +11,7 @@ const itHealthRoutes = require("./routes/itAssets/itHealthRoutes");
 const visitorRoutes = require("./routes/visitorRoutes");
 const jobPortalRoutes = require("./routes/jobPortal/jobPortalRoutes");
 const isfFilingRoutes = require("./routes/ISF_filing/isfFilingRoutes");
+const userManagementRoutes = require("./routes/userManagementRoutes");
 const healthRoutes = require("./routes/healthRoutes");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -56,6 +58,7 @@ app.use("/health", healthRoutes);
 // Routes
 app.use("/api/origin/auth", authRoutes);// Ensure this route is correctly set up
 app.use("/api/origin/forms", formRoutes);
+app.use("/api/origin/shipping-lines", shippingLineRoutes);
 app.use("/api/railfreight/forms", railFreightRoutes);
 
 // IT Assets Routes
@@ -71,6 +74,11 @@ app.use("/api/job-portal", jobPortalRoutes);
 
 // ISF Filing
 app.use("/api/isf-filing", isfFilingRoutes);
+
+// User Management — IT Admin only. Reached from the IT Assets portal;
+// authentication happens at /api/v1/itAssets/auth/login.
+// There is no registration endpoint anywhere in this API.
+app.use("/api/admin", userManagementRoutes);
 
 
 // Error Handling Middleware

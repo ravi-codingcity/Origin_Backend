@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const ctrl = require('../../controllers/itAssets/itAssetController');
+const { requireAuth, requireDepartment } = require('../../middleware/portalAuth');
 const {
   createAssetRules,
   updateAssetRules,
@@ -10,6 +11,10 @@ const {
   listAssetsRules,
   bulkCreateRules,
 } = require('../../middleware/itAssets/assetValidator');
+
+// Every asset route requires an authenticated IT Assets user.
+// (Admins and super admins pass the department check by design.)
+router.use(requireAuth, requireDepartment('it_assets'));
 
 // Multer configured for in-memory buffer (no disk writes)
 const upload = multer({

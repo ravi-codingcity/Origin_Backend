@@ -7,7 +7,9 @@
       "Read(//tmp/**)",
       "Bash(kill %1)",
       "Bash(PORT=3556 node server.js)",
-      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" http://localhost:3556/health/ready)"
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" http://localhost:3556/health/ready)",
+      "PowerShell(git config --global --add safe.directory 'D:/OmTrans New Site 2026/omtrans-main/origin_backend')",
+      "PowerShell(git config --global --get-all safe.directory)"
     ]
   }
 }

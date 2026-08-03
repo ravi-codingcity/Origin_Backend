@@ -2,15 +2,18 @@ const express = require("express");
 const rateLimit = require("express-rate-limit");
 const router = express.Router();
 
-const jobAuth = require("../../middleware/jobPortal/jobAuth");
 const {
   loginRules,
   createJobRules,
   updateJobRules,
   jobIdRules,
-  signupRules,
 } = require("../../middleware/jobPortal/jobValidator");
-const { login, signup } = require("../../controllers/jobPortal/jobAuthController");
+const { hrPortalLogin, me } = require("../../controllers/portalAuthController");
+const { requireAuth, requireDepartment } = require("../../middleware/portalAuth");
+
+// HR writes require a valid token AND membership of the HR portal
+// (admins/super admins pass through requireDepartment by design).
+const hrAuth = [requireAuth, requireDepartment("hr_portal")];
 const {
   getJobs,
   getJobById,
@@ -28,26 +31,23 @@ const loginLimiter = rateLimit({
   message: { message: "Too many login attempts, please try again later" },
 });
 
-// Abuse protection on the hidden signup endpoint: 3 requests / 15 min / IP
-const signupLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 3,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { message: "Too many signup attempts, please try again later" },
-});
+/**
+ * PUBLIC / SECRET-GATED SIGNUP HAS BEEN REMOVED.
+ * HR Portal accounts are created only by an Admin via the protected
+ * user-management API (/api/admin/users).
+ */
 
 // --- Auth ---
-router.post("/login", loginLimiter, loginRules, login);
-router.post("/signup", signupLimiter, signupRules, signup);
+router.post("/login", loginLimiter, loginRules, hrPortalLogin);
+router.get("/me", requireAuth, me);
 
 // --- Public reads ---
 router.get("/jobs", getJobs);
 router.get("/jobs/:id", jobIdRules, getJobById);
 
 // --- HR-protected writes ---
-router.post("/jobs", jobAuth, createJobRules, createJob);
-router.put("/jobs/:id", jobAuth, updateJobRules, updateJob);
-router.delete("/jobs/:id", jobAuth, jobIdRules, deleteJob);
+router.post("/jobs", hrAuth, createJobRules, createJob);
+router.put("/jobs/:id", hrAuth, updateJobRules, updateJob);
+router.delete("/jobs/:id", hrAuth, jobIdRules, deleteJob);
 
 module.exports = router;

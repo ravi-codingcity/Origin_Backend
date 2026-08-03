@@ -15,6 +15,19 @@ const sanitizeChargeFields = (body) => {
   return sanitized;
 };
 
+/**
+ * Every id the signed-in user may own records under.
+ *
+ * Records created before role-based auth store the user's ORIGINAL account id
+ * in `createdBy`; records created since store their PortalUser id. Matching
+ * both keeps historical data visible without rewriting any record.
+ */
+const ownerIds = (req) =>
+  (req.user && req.user.ownerIds && req.user.ownerIds.length
+    ? req.user.ownerIds
+    : [req.user.id]
+  ).filter(Boolean);
+
 // Cache keys
 const ALL_FORMS_CACHE_KEY = "all_forms";
 const USER_FORMS_PREFIX = "user_forms_";
@@ -87,7 +100,7 @@ const editForm = async (req, res) => {
     if (!form) {
       return res.status(404).json({ message: "Form not found" });
     }
-    if (form.createdBy.toString() !== req.user.id) {
+    if (!ownerIds(req).some((id) => String(id) === String(form.createdBy))) {
       return res.status(403).json({ message: "Forbidden" });
     }
     Object.assign(form, sanitizeChargeFields(req.body));
@@ -108,7 +121,7 @@ const deleteForm = async (req, res) => {
     if (!form) {
       return res.status(404).json({ message: "Form not found" });
     }
-    if (form.createdBy.toString() !== req.user.id) {
+    if (!ownerIds(req).some((id) => String(id) === String(form.createdBy))) {
       return res.status(403).json({ message: "Forbidden" });
     }
     await Form.deleteOne({ _id: form._id });
@@ -187,7 +200,7 @@ const getUserForms = async (req, res) => {
     console.log("Getting fresh user forms from database");
 
     // If cache is missing, stale, or refresh requested, fetch from database
-    const fetchUserForms = async () => Form.find({ createdBy: userId });
+    const fetchUserForms = async () => Form.find({ createdBy: { $in: ownerIds(req) } });
 
     let forms;
     if (forceRefresh) {
